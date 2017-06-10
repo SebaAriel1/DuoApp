@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "888937958143",
+    "project_id": "firebase-duoapp"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888937958143:android:2f23e2c28b8a68e5",
+        "android_client_info": {
+          "package_name": "com.example.progeria.duoapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "888937958143-o9c8rvbdt41n2ltojm6sknbgb52in3ok.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.progeria.duoapp",
+            "certificate_hash": "25d14a055e3fd3ac5016c038ef1bfc0a9c7f7c9f"
+          }
+        },
+        {
+          "client_id": "888937958143-7oc78drftcaa3v41g8kibfcc68jqukas.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAqsK5vw7ZGHBd9BI4n-ZeWt9U6xVpnGY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
