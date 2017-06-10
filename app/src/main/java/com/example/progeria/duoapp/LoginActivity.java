@@ -1,4 +1,4 @@
-package com.usm.progeria.duoapp;
+package com.example.progeria.duoapp;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -29,7 +29,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.progeria.duoapp.R;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;

@@ -1,4 +1,4 @@
-package com.usm.progeria.duoapp;
+package com.example.progeria.duoapp;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -21,7 +21,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.progeria.duoapp.R;
 import com.facebook.AccessToken;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
