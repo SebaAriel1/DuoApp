@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.GravityCompat;
@@ -18,12 +17,25 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.facebook.AccessToken;
+import com.example.progeria.duoapp.FirebaseObjets.ProfileActivity;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,14 +43,20 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
 
+    private static final float DEFAULT_ZOOM = 17;
     private Bundle bundle;
     private String urlPic;
     private ImageView profilePic;
     private TextView userMail;
     private TextView userName;
+    private String userMailValue, userNameValue;
+
+    private GoogleMap mMap;
+
+    private boolean visible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,23 +65,18 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (AccessToken.getCurrentAccessToken() == null){
+        if (FirebaseAuth.getInstance().getCurrentUser() == null){
             goLoginScreen();
         } else {
 
             bundle = getIntent().getExtras();
             if (bundle != null) {
-                urlPic = bundle.getString(LoginActivity.URL_PICTURE);
+                //foto de facebook
+                //urlPic = bundle.getString(LoginActivity.URL_PICTURE);
             }
 
-            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                }
-            });
+            final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                     this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -77,6 +90,10 @@ public class MainActivity extends AppCompatActivity
             userMail = (TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_user_mail);
             userName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_user_name);
 
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+
             //Si viene de facebook, setear imagen de perfil en drawer
             final Profile currentProfile = Profile.getCurrentProfile();
             if (currentProfile != null) {
@@ -84,8 +101,37 @@ public class MainActivity extends AppCompatActivity
                 reportTask.execute();
             }
 
-            userMail.setText(bundle.getString(LoginActivity.MAIL_EXTRA));
-            userName.setText(bundle.getString(LoginActivity.FIRST_NAME_EXTRA));
+            //userMail.setText(bundle.getString(LoginActivity.MAIL_EXTRA));
+            //userName.setText(bundle.getString(LoginActivity.FIRST_NAME_EXTRA));
+            FirebaseUser actualUser = FirebaseAuth.getInstance().getCurrentUser();
+            userMailValue = actualUser.getEmail();
+            userNameValue = actualUser.getDisplayName();
+            userMail.setText(userMailValue);
+            userName.setText(userNameValue);
+
+            final Animation bottomUp = AnimationUtils.loadAnimation(this,
+                    R.anim.bottomn_up);
+            final Animation bottomDown = AnimationUtils.loadAnimation(this,
+                    R.anim.bottom_down);
+            final LinearLayout hiddenPanel = (LinearLayout) findViewById(R.id.layoutwea);
+            hiddenPanel.startAnimation(bottomUp);
+            hiddenPanel.setVisibility(View.GONE);
+
+            /*fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (visible){
+                        hiddenPanel.startAnimation(bottomDown);
+                        hiddenPanel.setVisibility(View.GONE);
+                        fab.startAnimation(bottomDown);
+                    }else{
+                        hiddenPanel.startAnimation(bottomUp);
+                        hiddenPanel.setVisibility(View.VISIBLE);
+                        fab.startAnimation(bottomUp);
+                    }
+                    visible = !visible;
+                }
+            });*/
         }
 
 
@@ -141,8 +187,10 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_slideshow:
                 break;
             case R.id.nav_manage:
+                showProfile();
                 break;
             case R.id.nav_share:
+                sendWhatsappInvitation(item.getActionView());
                 break;
             case R.id.nav_send:
                 break;
@@ -152,6 +200,11 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void showProfile() {
+        Intent intent = new Intent(this, ProfileActivity.class);
+        startActivity(intent);
     }
 
     public static Bitmap getBitmapFromURL(String src) {
@@ -171,7 +224,29 @@ public class MainActivity extends AppCompatActivity
 
     public void logOut(MenuItem item) {
         LoginManager.getInstance().logOut();
+        FirebaseAuth.getInstance().signOut();
         goLoginScreen();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in Sydney and move the camera
+        LatLng position = new LatLng(-34, -70);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        MarkerOptions marker = new MarkerOptions();
+        marker.position(position);
+        marker.title("EvilPker");
+        mMap.addMarker(marker);
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(position)
+                .zoom(DEFAULT_ZOOM)
+                .bearing(0)
+                .tilt(0)
+                .build();
+
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     private class SetProfilePic extends AsyncTask<Void, Void, Integer> {
@@ -217,5 +292,21 @@ public class MainActivity extends AppCompatActivity
         roundedBitmapDrawable.setAntiAlias(true);
         iv.setImageDrawable(roundedBitmapDrawable);
         iv.setVisibility(View.VISIBLE);
+    }
+
+    public void sendWhatsappInvitation(View v) {
+
+        String body = String.format(getString(R.string.menu_whatsapp_invitation_body), userNameValue);
+
+        try {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setPackage("com.whatsapp");
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.menu_whatsapp_invitation_suject));
+            intent.putExtra(Intent.EXTRA_TEXT, body);
+            startActivity(intent);
+        } catch (Exception e) {
+            Toast.makeText(MainActivity.this, R.string.menu_no_whatsapp, Toast.LENGTH_SHORT).show();
+        }
     }
 }

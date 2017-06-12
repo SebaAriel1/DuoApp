@@ -1,7 +1,9 @@
 {
   "project_info": {
     "project_number": "888937958143",
-    "project_id": "firebase-duoapp"
+    "firebase_url": "https://fir-duoapp.firebaseio.com",
+    "project_id": "firebase-duoapp",
+    "storage_bucket": "firebase-duoapp.appspot.com"
   },
   "client": [
     {
@@ -12,6 +14,10 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "888937958143-krbqil33rip04ok5po6oaqmn0im56ct0.apps.googleusercontent.com",
+          "client_type": 3
+        },
         {
           "client_id": "888937958143-o9c8rvbdt41n2ltojm6sknbgb52in3ok.apps.googleusercontent.com",
           "client_type": 1,
@@ -35,11 +41,16 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "888937958143-krbqil33rip04ok5po6oaqmn0im56ct0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }
