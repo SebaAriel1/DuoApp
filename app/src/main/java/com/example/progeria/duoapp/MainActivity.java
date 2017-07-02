@@ -235,6 +235,7 @@ public class MainActivity extends AppCompatActivity
         // Add a marker in Sydney and move the camera
         LatLng position = new LatLng(-34, -70);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mMap.getUiSettings().setMapToolbarEnabled(true);
         MarkerOptions marker = new MarkerOptions();
         marker.position(position);
         marker.title("EvilPker");
@@ -300,7 +301,7 @@ public class MainActivity extends AppCompatActivity
 
         try {
             Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setPackage("com.whatsapp");
+            //intent.setPackage("com.whatsapp");
             intent.setType("text/plain");
             intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.menu_whatsapp_invitation_suject));
             intent.putExtra(Intent.EXTRA_TEXT, body);

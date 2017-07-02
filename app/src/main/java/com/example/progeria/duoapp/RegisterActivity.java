@@ -117,7 +117,7 @@ public class RegisterActivity extends AppCompatActivity {
                     mainRolSpinner.getSelectedItem().toString(),
                     secundaryRolSpinner.getSelectedItem().toString(),
                     usernameET.getText().toString());
-            bdRef.child(FirebaseReferences.USERS_REFERENCE).push().setValue(newUser);
+            bdRef.child(FirebaseReferences.USERS_REFERENCE).child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(newUser);
             goMainActivity();
 
         }
