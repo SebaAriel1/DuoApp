@@ -51,6 +51,7 @@
     <string name="registerRegionHint">Selecciona la region en que juegas</string>
     <string name="register_username_error_text">Debe ingresar un nombre de usuario</string>
     <string name="auth_failed">Error</string>
+    <string name="registerLocationHint">Ingresa tu ubicación</string>
 
     <string-array name="gameList">
         <item>League of Legends</item>

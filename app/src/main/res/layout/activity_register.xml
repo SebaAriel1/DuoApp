@@ -181,6 +181,19 @@
 
             </LinearLayout>
 
+            <EditText
+                android:id="@+id/registerLocationEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColorHint="@color/textColorHint"
+                android:hint="@string/registerLocationHint"
+                android:inputType="text"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textAlignment="center"
+                android:textColor="@color/textColor" />
+
         </LinearLayout>
 
     </ScrollView>

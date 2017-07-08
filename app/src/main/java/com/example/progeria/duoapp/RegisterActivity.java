@@ -9,17 +9,25 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.progeria.duoapp.FirebaseObjets.FirebaseReferences;
 import com.example.progeria.duoapp.FirebaseObjets.User;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    public static final String TAG = RegisterActivity.class.getCanonicalName();
+
+    public static final int PLACE_PICKER_REQUEST = 1;
     private Spinner gameSpinner, leagueSpinner, divisionSpinner, mainRolSpinner, secundaryRolSpinner, regionSpinner;
-    private EditText usernameET;
+    private EditText usernameET, addressET;
     private Button confirmButton;
 
     private ArrayAdapter<String> gameAdapter;
@@ -43,6 +51,22 @@ public class RegisterActivity extends AppCompatActivity {
         regionSpinner = (Spinner) findViewById(R.id.registerRegionSpinner);
 
         usernameET = (EditText) findViewById(R.id.registerUsernameED);
+        addressET = (EditText) findViewById(R.id.registerLocationEditText);
+
+        addressET.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                try {
+                    startActivityForResult(builder.build(RegisterActivity.this), PLACE_PICKER_REQUEST);
+                } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+
 
         confirmButton = (Button) findViewById(R.id.confirmRegisterButton);
 
@@ -127,6 +151,16 @@ public class RegisterActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlacePicker.getPlace(data, this);
+                String toastMsg = String.format("Place: %s", place.getName());
+                Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
 }
